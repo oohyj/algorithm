@@ -5,7 +5,6 @@ const int MAX_N = 8;
 
 int n , m;
 int sequence[MAX_N];
-bool is_used[MAX_N+1];
 
 void printSequence(){
     for(int i =0; i<m; i++){
@@ -21,16 +20,9 @@ void backTracking(int count){
     }
 
     for(int i=1; i<=n; i++){
-        if(is_used[i]){
-            continue;
-        }
-
         sequence[count] = i;
-        is_used[i] = true;
-
         backTracking(count+1);
 
-        is_used[i] = false;
     }
 
 }
