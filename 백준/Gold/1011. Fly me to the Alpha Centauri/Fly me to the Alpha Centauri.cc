@@ -3,7 +3,6 @@
 using namespace std;
 
 int alpha_centauri(long long x, long long y) {
-    if (x == y) return 0;
 
     long long max = 0, move = 0;
 
