@@ -11,14 +11,6 @@ int changeNum(string str) {
     else return 3; // remain의 경우
 }
 
-struct Compare {
-    int index;  
-    Compare(int idx) : index(idx) {}  
-
-    bool operator()(const vector<int>& a, const vector<int>& b) const {
-        return a[index] < b[index]; 
-    }
-};
 
 vector<vector<int>> solution(vector<vector<int>> data, string ext, int val_ext, string sort_by) {
     vector<vector<int>> answer;
@@ -30,7 +22,7 @@ vector<vector<int>> solution(vector<vector<int>> data, string ext, int val_ext, 
             answer.push_back(row);
         }
     }
-    sort(answer.begin(), answer.end(), Compare(sort_num));
+    sort(answer.begin(), answer.end(), [sort_num](const vector<int>& a , const vector<int>& b){return a[sort_num] < b[sort_num];});
     
     return answer;
 }
