@@ -1,52 +1,33 @@
 #include <iostream>
 #include <vector>
-#include <set>
 #include <algorithm>
 
 using namespace std;
 
-void generateCombinations(int n, vector<vector<int>>& combinations) {
-    vector<int> nums;
-    for (int i = 1; i <= n; i++) nums.push_back(i);
-
-    vector<int> selected(5, 1);
-    selected.resize(n, 0);
-
-    do {
-        vector<int> comb;
-        for (int i = 0; i < n; i++) {
-            if (selected[i]) comb.push_back(nums[i]);
-        }
-        combinations.push_back(comb);
-    } while (prev_permutation(selected.begin(), selected.end()));
-}
-
 int solution(int n, vector<vector<int>> q, vector<int> ans) {
-    vector<vector<int>> candidates;
-    generateCombinations(n, candidates);
-
     int answer = 0;
-
-    for (const auto& secret : candidates) {
-        bool isValid = true;
-        for (size_t k = 0; k < q.size(); k++) {
-            set<int> secretSet(secret.begin(), secret.end());
-            set<int> querySet(q[k].begin(), q[k].end());
-
-            int intersectionSize = 0;
-            for (int num : querySet) {
-                if (secretSet.count(num)) {
-                    intersectionSize++;
-                }
-            }
-
-            if (intersectionSize != ans[k]) {
-                isValid = false;
+    int m = q.size();
+    vector<int> comb(n,0); // 크기가 n인 벡터 생성
+    
+    for(int i =0; i<5; i++){
+        comb[n-i-1] = 1; // 전체 n 중에 5개만 1로 저장
+    }
+    
+    //next_permutation을 사용해 모든 조합 확인
+    do{
+        bool flag = true;
+        for(int i =0; i<m; i++){
+            // comb에서 해당 인덱스가 선택된(1) 개수 계산
+            if(ans[i] != comb[q[i][0]-1] +comb[q[i][1]-1]+comb[q[i][2]-1]+comb[q[i][3]-1]+comb[q[i][4]-1]){
+                flag = false; // 하나라도 불일치하면 후보에서 제외
                 break;
             }
         }
-        if (isValid) answer++;
-    }
+        
+        if(flag) ++answer; // 모든 조건을 만족하면 증가
+    }while(next_permutation(comb.begin() , comb.end())); // 다음 조합 생성
+
+   
 
     return answer;
 }
