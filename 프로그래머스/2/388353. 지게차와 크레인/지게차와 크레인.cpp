@@ -4,161 +4,97 @@
 
 using namespace std;
 
-typedef struct
-{
-    int y, x;
-} Dir;
-
-Dir moveDir[4] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+int dirY[] = {1,0,-1,0};
+int dirX[] = {0,1,0,-1};
 
 int solution(vector<string> storage, vector<string> requests) {
-    int n = storage.size();
-    int m = storage[0].size();
-    
-    for (auto req : requests) 
-    {
-        char letter = req[0];
-        
-        if (req.size() == 2) 
-        {
-            for (int y = 0; y < n; y++)
-            {
-                for (int x = 0; x < m; x++)
-                {
-                    if (storage[y][x] == letter) 
-                    {
-                        storage[y][x] = '.';
-                    }
-                }
-            }
-            
-            continue;
-        }
-        
-        vector<vector<bool>> reachable(n, vector<bool>(m, false));
-        queue<pair<int,int>> q;
-
-        for (int y = 0; y < n; y++) 
-        {
-            if (storage[y][0] == '.' && !reachable[y][0]) 
-            {
-                reachable[y][0] = true;
-                
-                q.push({y, 0});
-            }
-            
-            if (storage[y][m - 1] == '.' && !reachable[y][m - 1]) 
-            {
-                reachable[y][m - 1] = true;
-                
-                q.push({y, m - 1});
-            }
-        }
-        
-        for (int x = 0; x < m; x++)
-        {
-            if (storage[0][x] == '.' && !reachable[0][x]) 
-            {
-                reachable[0][x] = true;
-                
-                q.push({0, x});
-            }
-            
-            if (storage[n - 1][x] == '.' && !reachable[n - 1][x]) 
-            {
-                reachable[n - 1][x] = true;
-                
-                q.push({n - 1, x});
-            }
-        }
-
-        while (!q.empty())
-        {
-            auto cur = q.front(); 
-            q.pop();
-            
-            int y = cur.first;
-            int x = cur.second;
-            
-            for (int k = 0; k < 4; k++)
-            {
-                int nextY = y + moveDir[k].y;
-                int nextX = x + moveDir[k].x;
-                
-                if (nextY < 0 || nextY >= n || nextX < 0 || nextX >= m)
-                {
-                    continue;
-                }
-                
-                if (storage[nextY][nextX] == '.' && !reachable[nextY][nextX])
-                {
-                    reachable[nextY][nextX] = true;
-                    
-                    q.push({nextY, nextX});
-                }
-            }
-        }
-
-        for (int y = 0; y < n; y++)
-        {
-            for (int x = 0; x < m; x++)
-            {
-                if (storage[y][x] != letter)
-                {
-                    continue;
-                }
-                
-                bool accessible = false;
-
-                if (y == 0 || y == n - 1 
-                    || x == 0 || x == m - 1) 
-                {
-                    accessible = true;
-                } 
-                else 
-                {
-                    for (int k = 0; k < 4; k++)
-                    {
-                        int nextY = y + moveDir[k].y;
-                        int nextX = x + moveDir[k].x;
-                        
-                        if (nextY < 0 || nextY >= n 
-                            || nextX < 0 || nextX >= m) 
-                        {
-                            accessible = true;
-                            
-                            break;
-                        }
-                        
-                        if (storage[nextY][nextX] == '.' && reachable[nextY][nextX])
-                        {
-                            accessible = true;
-                            
-                            break;
-                        }
-                    }
-                }
-
-                if (accessible) 
-                {
-                    storage[y][x] = '.';
-                }
-            }
-        }
-    }
-    
     int answer = 0;
-    
-    for (int y = 0; y < n; y++)
+
+    int c = storage.size();   //y크기
+    int r = storage[0].size(); //x크기
+
+    vector<vector<bool>> container (c, vector<bool>(r, true)); //해당 위치에 컨테이너 존재여부
+
+    for(string req: requests) //명령어 순회
     {
-        for (int x = 0; x < m; x++)
+        vector<vector<bool>> copyContainer = container; //현재 container 저장
+        for(int y =0; y < c; y++)
         {
-            if (storage[y][x] != '.')
+            for(int x = 0; x< r; x++)
+            {
+                if(req[0] == storage[y][x]) //일치하는 글자 찾음
+                {
+
+
+                    if(req.size() == 2)
+                    {
+                        //크레인을 사용한 제거
+                        copyContainer[y][x] = false;
+                    }
+                    else
+                    {
+                        //지게차를 사용한 제거 
+                        queue<pair<int,int>> q; //y,x좌표
+                        q.push({y,x});
+                        vector<vector<bool>> check(c , vector<bool>(r,false)); //방문여부
+                        check[y][x] = true; //현재위치 방문 완료
+                        int canMove = false;
+                        while(!q.empty())
+                        {
+                            //체크할 현재 위치
+                            int curY = q.front().first;
+                            int curX = q.front().second;
+                            q.pop();
+
+                            //4방향 순회
+                            for(int dir =0; dir<4; dir++)
+                            {
+                                //방향에 따른 다음 위치
+                                int nextY = curY + dirY[dir];
+                                int nextX = curX + dirX[dir];
+
+                                //다음 위치가 범위를 벗어난다 = 가장자리이다. 컨테이너 제거 가능
+                                if(nextY < 0 || nextY > c-1 || nextX < 0 || nextX > r-1)
+                                {
+                                    canMove = true;
+                                    break;
+                                }
+
+                                //이미 지나간 자리거나 다음위치에 다른 컨테이너가 있다. 무시
+                                if(check[nextY][nextX] == true || container[nextY][nextX] == true)
+                                {
+                                    continue;
+                                }
+
+                                //지나간적 없고 , 비어있는 자리라면 큐에 삽입
+                                q.push({nextY,nextX});
+                                check[nextY][nextX] = true;
+                            }
+                        }
+
+                        //제거 가능하면 제거
+                        if(canMove == true)
+                        {
+                            copyContainer[y][x] = false; //제거
+                        }
+                    } 
+
+                } 
+            }
+        } 
+        container = copyContainer;
+    }
+
+    for(int i =0; i< c; i++)
+    {
+        for(int j =0; j< r; j++)
+        {
+            if(container[i][j] == true)
             {
                 answer++;
             }
         }
     }
-    
+
     return answer;
 }
