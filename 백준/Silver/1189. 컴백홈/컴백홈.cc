@@ -11,10 +11,8 @@ int dx[] = {1 , -1 , 0 , 0};
 int dy[] = { 0 , 0 , 1 , -1};
 void dfs(int x , int y ,int cnt){
 
-    if (cnt == K) {
-        if (x == 0 && y == C - 1) {
-            answer++;
-        }
+    if (cnt == K && x == 0 && y == C - 1) {
+       answer++;
         return;
     }
 
@@ -23,7 +21,6 @@ void dfs(int x , int y ,int cnt){
         int nx = x+ dx[i];
         int ny = y + dy[i];
         if(nx >=0 && nx < R && ny >=0 && ny < C && board[nx][ny] != 'T' && !visited[nx][ny]){
-
             dfs(nx , ny , cnt+1);
         }
     }
