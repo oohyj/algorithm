@@ -6,35 +6,30 @@
 using namespace std;
 
 int N, K, result = 0;
-vector<vector<char>> words;  // 각 단어를 글자 리스트로 저장
-bool visited[26];
+vector<int> wordMask;
 
-int canReadable() {
+int canReadable(int learned) {
     int cnt = 0;
-    for (const auto& w : words) {
-        bool canRead = true;
-        for (char c : w) {
-            if (!visited[c - 'a']) {
-                canRead = false;
-                break;
-            }
-        }
-        if (canRead) cnt++;
+    for (int mask : wordMask) {
+        if ((mask & learned) == mask) cnt++;
+    }
+
+    if (cnt == N) {
+        cout << N << '\n';
+        exit(0);
     }
     return cnt;
 }
 
-void backtrack(int index, int depth) {
+void backtrack(int index, int depth, int learned) {
     if (depth == K - 5) {
-        result = max(result, canReadable());
+        result = max(result, canReadable(learned));
         return;
     }
 
-    for (int i = index; i < 26; i++) {
-        if (!visited[i]) {
-            visited[i] = true;
-            backtrack(i + 1, depth + 1);
-            visited[i] = false;
+    for (int i = index; i < 26; ++i) {
+        if (!(learned & (1 << i))) {
+            backtrack(i + 1, depth + 1, learned | (1 << i));
         }
     }
 }
@@ -43,30 +38,31 @@ int main() {
     cin >> N >> K;
 
     if (K < 5) {
-        cout << 0 << '\n';
+        cout << "0\n";
         return 0;
     }
 
-    // 필수 글자 미리 방문 처리
-    visited['a' - 'a'] = true;
-    visited['c' - 'a'] = true;
-    visited['i' - 'a'] = true;
-    visited['n' - 'a'] = true;
-    visited['t' - 'a'] = true;
-
+    wordMask.resize(N);
     for (int i = 0; i < N; ++i) {
-        string s;
-        cin >> s;
-        vector<char> trimmed;
-
-        for (int j = 4; j < s.size() - 4; ++j) {  // anta~tica 제외
-            trimmed.push_back(s[j]);
+        string str;
+        cin >> str;
+        int bit = 0;
+        for (int j = 4; j < str.size() - 4; ++j) { // anta, tica 제거
+            bit |= (1 << (str[j] - 'a'));
         }
-
-        words.push_back(trimmed);
+        wordMask[i] = bit;
     }
 
-    backtrack(0, 0);
+   
+    int learned = 0;
+    learned |= (1 << ('a' - 'a'));
+    learned |= (1 << ('c' - 'a'));
+    learned |= (1 << ('i' - 'a'));
+    learned |= (1 << ('n' - 'a'));
+    learned |= (1 << ('t' - 'a'));
+
+    backtrack(0, 0, learned);
+
     cout << result << '\n';
     return 0;
 }
