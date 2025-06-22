@@ -1,18 +1,17 @@
 #include <iostream>
 #include <vector>
 #include <queue>
-#include <cstring>
 using namespace std;
 
 const int MAX = 10001;
 
-vector<pair<int, int>> graph[MAX];
-bool visited[MAX];
-int dist[MAX];
+vector<vector<pair<int, int>>> graph(MAX);
+vector<bool> visited;
+vector<int> dist;
 
 pair<int, int> bfs(int start) {
-    memset(visited, false, sizeof(visited));
-    memset(dist, 0, sizeof(dist));
+    visited.assign(MAX, false);
+    dist.assign(MAX, 0);
 
     queue<int> q;
     q.push(start);
@@ -46,9 +45,7 @@ int main() {
         graph[v].push_back({u, w});
     }
 
-
     pair<int, int> first = bfs(1);
-   
     pair<int, int> result = bfs(first.first);
 
     cout << result.second << '\n';
