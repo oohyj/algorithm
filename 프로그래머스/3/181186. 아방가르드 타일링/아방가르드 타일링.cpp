@@ -6,8 +6,8 @@ using namespace std;
 
 #define DIV 1000000007
 
-vector<unsigned long long> dp(100001, 0);
-vector<unsigned long long> sum(100001, 0);
+vector<long long> dp(100001, 0);
+vector<long long> sum(100001, 0);
 
 
 int solution(int n) {
