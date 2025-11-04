@@ -1,5 +1,4 @@
 #include <bits/stdc++.h>
-
 using namespace std;
 
 const int N = 50;
@@ -7,9 +6,9 @@ const int N = 50;
 vector<vector<string>> cells(N, vector<string>(N, ""));
 vector<int> parent(N * N), rnk(N * N, 0);
 
-inline int idx(int r, int c) { return (r - 1) * N + (c - 1); }
-inline int rowOf(int id) { return id / N; }
-inline int colOf(int id) { return id % N; }
+int idx(int r, int c) { return (r - 1) * N + (c - 1); }
+int rowOf(int id) { return id / N; }
+int colOf(int id) { return id % N; }
 
 int findParent(int x) {
     return parent[x] == x ? x : parent[x] = findParent(parent[x]);
@@ -24,7 +23,7 @@ void uniteIds(int a, int b) {
     if (rnk[a] == rnk[b]) rnk[a]++;
 }
 
-inline string& groupValueRef(int id) {
+string& groupValueRef(int id) {
     int r = findParent(id);
     return cells[rowOf(r)][colOf(r)];
 }
