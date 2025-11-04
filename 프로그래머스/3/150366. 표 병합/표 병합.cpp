@@ -1,7 +1,5 @@
-#include <string>     
-#include <vector>       
-#include <sstream>     
-#include <algorithm>   
+#include <bits/stdc++.h>
+
 using namespace std;
 
 const int N = 50;
